@@ -11,8 +11,8 @@ uninstallstart $@
 
 # start custom script ------------------------------------------------------------------------------>>>
 
-echo -e "$bar Remove youtube-dl..."
-pacman -R --noconfirm youtube-dl
+echo -e "$bar Remove youtube-dl and atomicparsley..."
+pacman -R --noconfirm youtube-dl atomicparsley
 
 echo -e "$bar Remove web files..."
 rm -v /srv/http/youtube.php
