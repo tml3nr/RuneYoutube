@@ -32,7 +32,7 @@ file=/srv/http/app/templates/playbackcustom.php
 
 file=/srv/http/app/templates/footer.php
 echo $file
-sed -i -e '/RuneYoutube.js/ d' file
+sed -i -e '/RuneYoutube.js/ d' $file
 
 echo -e "$bar Removing youtube javascript.."
 rm -v /srv/http/assets/js/RuneYoutube.js
