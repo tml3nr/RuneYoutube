@@ -15,7 +15,7 @@ getinstallzip
 ### template - function: (optional) rank miror servers and 'pacman -Sy' before install packages
 rankmirrors
 
-command -v ffmpeg >/dev/null 2>&1 || { echo -e "$warn ERROR: ffmpeg is not installed, please run the MPM upgrade addon first." >&2; exit 1; }
+command -v ffmpeg >/dev/null 2>&1 || { echo -e "$warn ERROR: ffmpeg is not installed, please run the MPC Upgrade first." >&2; exit 1; }
 
 
 gitpath=https://github.com/xortuna/RuneYoutubeAddon/raw/master/
@@ -51,6 +51,11 @@ catch (Exception $e) {
 
 }
 ?>' >> /srv/http/youtube.php
+
+## Javascript Injection into Footer##
+file=/srv/http/app/templates/footer.php
+echo $file
+echo '<script src="<?=$this->asset('"'"'/js/RuneYoutube.js'"'"')?>"></script>' >> $file
 
 ### Tube ###
 echo -e "$bar Creasting bash scripts..."
@@ -98,39 +103,6 @@ sed -i -e $'/<button id="pl-manage-save" class="btn btn-default" type="button" t
 file=/srv/http/app/templates/playbackcustom.php
 [[ -e $file ]] && sed -i '/id="pl-import-youtube"/ {s/<!--//; s/-->//}' $file
 
-file=/srv/http/assets/js/runeui.js
-echo $file
-	sed -i $'/\/\/ sort Queue entries/ i\
-        //RUNE_YOUTUBE_MOD\
-        // save youtube to playlist\
-        $(\'#modal-pl-youtube-btn\').click(function(){\
-            var playlistname = $(\'#pl-video-url\').val();\
-            if (playlistname != null) {\
-             var encstream = encodeURI(playlistname);  //url encode\
-             encstream = encodeURIComponent(encstream); //encodes also ? & ... chars\
-            if(encstream.indexOf("playlist") !== -1)\
-            {\
-                renderMSG( ([{\'title\': \'YouTube\', \'text\': \'Requesting playlist...\', \'icon\': \'fa fa-cog fa-spin\', \'delay\': 3000 }]) );\
-            }\
-            else\
-            {\
-                renderMSG( ([{\'title\': \'YouTube\', \'text\': \'Fetching video...\', \'icon\': \'fa fa-cog fa-spin\', \'delay\': 5000 }]) );\
-            }\
-             $.get("youtube.php?url=" + encstream, function( data ) {\
-               if(data.indexOf("playlist") !== -1)\
-               {\
-                   renderMSG( ([{\'title\': \'YouTube\', \'text\': \'Downloading playlist...\', \'icon\': \'fa fa-check\', \'delay\': 6000 }]) );\
-               }\
-               else\
-               {\
-                   renderMSG( ([{\'title\': \'Added to queue\', \'text\': \'YouTube video\', \'icon\': \'fa fa-check\', \'delay\': 3000 }]) );\
-               }\
-            });\
-            }\
-        });\
-        //END_RUNE_YOUTUBE_MOD' $file
-			
-			
 echo -e "$bar Creating YouTube storage directory ..."
 dir=/mnt/MPD/LocalStorage/Youtube
 echo $dir
