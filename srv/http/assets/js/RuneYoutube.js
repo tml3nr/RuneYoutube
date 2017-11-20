@@ -33,6 +33,11 @@ if ($('#section-index').length) {
             });
             }
         });
+        $("#pl-video-url").keyup(function(event) {
+        if (event.keyCode === 13) {
+            $("#modal-pl-youtube-btn").click();
+        }
+});
 //END_RUNE_YOUTUBE_MOD
 });
 }
