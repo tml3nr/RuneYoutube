@@ -21,8 +21,8 @@ command -v ffmpeg >/dev/null 2>&1 || { echo -e "$warn ERROR: ffmpeg is not insta
 gitpath=https://github.com/xortuna/RuneYoutubeAddon/raw/master/
 
 ### PACMAN ### 
-echo -e "$bar Installing youtube-dl..."
-pacman -S --noconfirm youtube-dl
+echo -e "$bar Installing youtube-dl and atomicparsley..."
+pacman -S --noconfirm youtube-dl atomicparsley
 
 ### PHP Script ###
 echo -e "$bar Creating web files..."
@@ -52,13 +52,18 @@ catch (Exception $e) {
 }
 ?>' >> /srv/http/youtube.php
 
+## Javascript Injection into Footer##
+file=/srv/http/app/templates/footer.php
+echo $file
+echo '<script src="<?=$this->asset('"'"'/js/RuneYoutube.js'"'"')?>"></script>' >> $file
+
 ### Tube ###
 echo -e "$bar Creasting bash scripts..."
 echo $'#!/bin/bash
-youtube-dl --no-mtime --restrict-filenames -o \'/mnt/MPD/LocalStorage/Youtube/%(title)s.%(ext)s\' --write-description -f "bestaudio[ext=m4a]" $1 && mpc update --wait LocalStorage/Youtube && VV=$(ls /mnt/MPD/LocalStorage/Youtube/*.description -t | head -n1) && VV=$(basename $VV .description) && mpc add "LocalStorage/Youtube/$VV.m4a" && echo $VV && chown -R http:http /mnt/MPD/LocalStorage/Youtube/$VV.*' >> /usr/local/bin/tube
+youtube-dl --no-mtime --embed-thumbnail --restrict-filenames -o \'/mnt/MPD/LocalStorage/Youtube/%(title)s.%(ext)s\' --write-description -f "bestaudio[ext=m4a]" $1 && mpc update --wait LocalStorage/Youtube && VV=$(ls /mnt/MPD/LocalStorage/Youtube/*.description -t | head -n1) && VV=$(basename $VV .description) && mpc add "LocalStorage/Youtube/$VV.m4a" && echo $VV && chown -R http:http /mnt/MPD/LocalStorage/Youtube/$VV.*' >> /usr/local/bin/tube
 ### Tube playlist ###
 echo $'#!/bin/bash
-youtube-dl --no-mtime --restrict-filenames --ignore-errors -o \'/mnt/MPD/LocalStorage/Youtube/%(title)s.%(ext)s\' --write-description -f "bestaudio[ext=m4a]" $1 ; mpc update --wait LocalStorage/Youtube
+youtube-dl --no-mtime --embed-thumbnail --restrict-filenames --ignore-errors -o \'/mnt/MPD/LocalStorage/Youtube/%(title)s.%(ext)s\' --write-description -f "bestaudio[ext=m4a]" $1 ; mpc update --wait LocalStorage/Youtube
 
 (IFS=\'
 \'
@@ -104,40 +109,6 @@ if [[ -e $file ]]; then
                 <!-- END_RUNE_YOUTUBE_MOD -->
 	' $file
 fi
-
-file=/srv/http/assets/js/runeui.js
-echo $file
-	sed -i $'/\/\/ sort Queue entries/ i\
-        //RUNE_YOUTUBE_MOD\
-        // save youtube to playlist\
-        $(\'#modal-pl-youtube-btn\').click(function(){\
-            var playlistname = $(\'#pl-video-url\').val();\
-            if (playlistname != null) {\
-             var encstream = encodeURI(playlistname);  //url encode\
-             encstream = encodeURIComponent(encstream); //encodes also ? & ... chars\
-            if(encstream.indexOf("playlist") !== -1)\
-            {\
-                renderMSG( ([{\'title\': \'YouTube\', \'text\': \'Requesting playlist...\', \'icon\': \'fa fa-cog fa-spin\', \'delay\': 3000 }]) );\
-            }\
-            else\
-            {\
-                renderMSG( ([{\'title\': \'YouTube\', \'text\': \'Fetching video...\', \'icon\': \'fa fa-cog fa-spin\', \'delay\': 5000 }]) );\
-            }\
-             $.get("youtube.php?url=" + encstream, function( data ) {\
-               if(data.indexOf("playlist") !== -1)\
-               {\
-                   renderMSG( ([{\'title\': \'YouTube\', \'text\': \'Downloading playlist...\', \'icon\': \'fa fa-check\', \'delay\': 6000 }]) );\
-               }\
-               else\
-               {\
-                   renderMSG( ([{\'title\': \'Added to queue\', \'text\': \'YouTube video\', \'icon\': \'fa fa-check\', \'delay\': 3000 }]) );\
-               }\
-            });\
-            }\
-        });\
-        //END_RUNE_YOUTUBE_MOD' $file
-			
-			
 echo -e "$bar Creating YouTube storage directory ..."
 dir=/mnt/MPD/LocalStorage/Youtube
 echo $dir

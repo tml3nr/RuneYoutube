@@ -11,28 +11,31 @@ uninstallstart $@
 
 # start custom script ------------------------------------------------------------------------------>>>
 
-echo -e "$bar Remove youtube-dl..."
-pacman -R --noconfirm youtube-dl
+echo -e "$bar Remove youtube-dl and atomicparsley..."
+pacman -R --noconfirm youtube-dl atomicparsley
 
 echo -e "$bar Remove web files..."
 rm -v /srv/http/youtube.php
+
 echo -e "$bar Remove shell scripts..."
 rm -v /usr/local/bin/tube
 rm -v /usr/local/bin/tubeplaylist
-echo -e "$bar Patch files..."
+
+echo -e "$bar Reverting Patched files..."
 file=/srv/http/app/templates/playback.php
 echo $file
 sed -i $'/<!-- RUNE_YOUTUBE_MOD -->/,/<!-- END_RUNE_YOUTUBE_MOD -->/ d' $file
-file=/srv/http/app/templates/playback.php
 
 # for RuneUI Enhancement
 file=/srv/http/app/templates/playbackcustom.php
 [[ -e $file ]] && sed -i '/<!-- RUNE_YOUTUBE_MOD -->/,/<!-- END_RUNE_YOUTUBE_MOD -->/ d' $file
 
-file=/srv/http/assets/js/runeui.js
+file=/srv/http/app/templates/footer.php
 echo $file
-	sed -i $'/\/\/RUNE_YOUTUBE_MOD/,/\/\/END_RUNE_YOUTUBE_MOD/ d' $file
+sed -i -e '/RuneYoutube.js/ d' file
 
+echo -e "$bar Removing youtube javascript.."
+rm -v $path/js/RuneYoutube.js
 
 echo -e "$bar Removing youtube directory.."
 rm -r /mnt/MPD/LocalStorage/Youtube
