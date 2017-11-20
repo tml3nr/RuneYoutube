@@ -35,7 +35,7 @@ echo $file
 sed -i -e '/RuneYoutube.js/ d' file
 
 echo -e "$bar Removing youtube javascript.."
-rm -v $path/js/RuneYoutube.js
+rm -v /srv/http/assets/js/RuneYoutube.js
 
 echo -e "$bar Removing youtube directory.."
 rm -r /mnt/MPD/LocalStorage/Youtube
