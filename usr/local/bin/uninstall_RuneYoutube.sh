@@ -28,7 +28,7 @@ sed -i $'/<!-- RUNE_YOUTUBE_MOD -->/,/<!-- END_RUNE_YOUTUBE_MOD -->/ d' $file
 
 # for RuneUI Enhancement
 file=/srv/http/app/templates/playbackcustom.php
-[[ -e $file ]] && sed -i '/<!-- RUNE_YOUTUBE_MOD -->/,/<!-- END_RUNE_YOUTUBE_MOD -->/ d' $file
+[[ -e $file ]] && sed -i '/id="pl-import-youtube"/ {s/^/<!--/; s/$/-->/}' $file
 
 file=/srv/http/app/templates/footer.php
 echo $file
