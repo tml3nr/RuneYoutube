@@ -15,7 +15,7 @@ getinstallzip
 ### template - function: (optional) rank miror servers and 'pacman -Sy' before install packages
 rankmirrors
 
-command -v ffmpeg >/dev/null 2>&1 || { echo -e "$warn ERROR: ffmpeg is not installed, please run the MPC Upgrade first." >&2; exit 1; }
+command -v ffmpeg >/dev/null 2>&1 || { echo -e "$warn ERROR: ffmpeg is not installed, please run the MPD Upgrade first." >&2; exit 1; }
 
 
 gitpath=https://github.com/xortuna/RuneYoutubeAddon/raw/master/
@@ -57,6 +57,15 @@ file=/srv/http/app/templates/footer.php
 echo $file
 echo '<script src="<?=$this->asset('"'"'/js/RuneYoutube.js'"'"')?>"></script>' >> $file
 
+## CSS injection into header ##
+echo -e "$bar Patching files ..."
+file=/srv/http/app/templates/header.php
+echo $file
+sed -i -e $'/<link rel="stylesheet" href="<?=$this->asset(\'/css/runeui.css\')?>">/ a\
+    <!-- RUNE_YOUTUBE_MOD -->\
+    <link rel="stylesheet" href="<?=$this->asset('/css/addon_youtube.css')?>">\
+    <!-- END_RUNE_YOUTUBE_MOD -->' $file
+
 ### Tube ###
 echo -e "$bar Creasting bash scripts..."
 echo $'#!/bin/bash
@@ -87,12 +96,12 @@ sed -i -e $'/<button id="pl-manage-save" class="btn btn-default" type="button" t
                 <h3 class="modal-title" id="modal-pl-youtube-label">Import from youtube</h3>\
             </div>\
             <div class="modal-body">\
-                <label for="pl-video-url">Enter a video or playlist url</label>\
-                <input id="pl-video-url" class="form-control osk-trigger" type="text" placeholder="Enter url">\
+                <label for="pl-video-url">Search a term or paste a url</label>\
+                <input id="pl-video-url" class="form-control osk-trigger" type="text" placeholder="Search...">\
+                <ul id="pl-video-searchresults"></ul>\
             </div>\
             <div class="modal-footer">\
-                <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">Close</button>\
-                <button type="button" id="modal-pl-youtube-btn" class="btn btn-primary btn-lg" data-dismiss="modal">Import</button>\
+                <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">Finished</button>\
             </div>\
         </div>\
     </div>\

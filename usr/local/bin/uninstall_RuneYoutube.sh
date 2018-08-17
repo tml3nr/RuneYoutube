@@ -25,6 +25,9 @@ echo -e "$bar Reverting Patched files..."
 file=/srv/http/app/templates/playback.php
 echo $file
 sed -i $'/<!-- RUNE_YOUTUBE_MOD -->/,/<!-- END_RUNE_YOUTUBE_MOD -->/ d' $file
+file=/srv/http/app/templates/header.php
+echo $file
+sed -i $'/<!-- RUNE_YOUTUBE_MOD -->/,/<!-- END_RUNE_YOUTUBE_MOD -->/ d' $file
 
 # for RuneUI Enhancement
 file=/srv/http/app/templates/playbackcustom.php

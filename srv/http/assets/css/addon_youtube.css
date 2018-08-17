@@ -1,0 +1,95 @@
+#pl-video-searchresults {
+    display: block;
+    margin: 0;
+    padding: 0;
+    list-style: none
+}
+#pl-video-searchresults li {
+    display: block;
+    height: 49px;
+    line-height: 19px;
+    border-bottom: 1px solid #172029;
+    font-size: 15px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+#pl-video-searchresults li:hover {
+	cursor: pointer;
+	background: #191D21
+}
+
+#pl-video-searchresults li img {
+	float: left;
+	height: 50px;
+}
+/* #playlist-entries li:before, */
+/* #playlist-entries li:after { */
+    /* content: " "; */
+    /* display: table */
+/* } */
+/* #playlist-entries li:after { */
+    /* clear: both */
+/* } */
+/* #playlist-entries li:before, */
+/* #playlist-entries li:after { */
+    /* content: " "; */
+    /* display: table */
+/* } */
+/* #playlist-entries li:after { */
+    /* clear: both */
+/* } */
+
+#pl-video-searchresults .active,
+#pl-video-searchresults .active:hover,
+#pl-video-searchresults .active:focus {
+    color: #e0e7ee;
+    background: #0095d8
+}
+#pl-video-searchresults .active .bl,
+#pl-video-searchresults .active:hover .bl,
+#pl-video-searchresults .active:focus .bl {
+    color: #34495e
+}
+#pl-video-searchresults .pl-action {
+    float: right;
+    display: block;
+    position: relative;
+    width: 50px;
+    height: 49px;
+    line-height: 49px;
+    font-size: 18px;
+    font-weight: normal;
+    text-align: center;
+    color: #e0e7ee;
+    text-decoration: none
+}
+#pl-video-searchresults span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+#pl-video-searchresults .sn {
+    display: block;
+    padding: 5px 0 0 10px
+}
+#pl-video-searchresults .sn span {
+    padding-left: 10px;
+    font-size: 14px;
+    font-style: normal;
+    color: #34495e
+}
+#pl-video-searchresults .sn span.infinite {
+    font-size: 28px
+}
+#pl-video-searchresults .bl {
+    display: block;
+    padding: 0 50px 0 10px;
+    font-size: 12px;
+    color: #587ca0
+}
