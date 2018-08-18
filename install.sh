@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # main reference
-alias=RuneYoutube
+alias=yout
 
 ### template - import default variables, functions
 . /srv/http/addonstitle.sh
+. /srv/http/addonsedit.sh
 
 ### template - function: start message, installed check
 installstart $@
@@ -15,7 +16,7 @@ getinstallzip
 ### template - function: (optional) rank miror servers and 'pacman -Sy' before install packages
 rankmirrors
 
-command -v ffmpeg >/dev/null 2>&1 || { echo -e "$warn ERROR: ffmpeg is not installed, please run the MPD Upgrade first." >&2; exit 1; }
+command -v ffmpeg >/dev/null 2>&1 || { echo -e "$warn ERROR: ffmpeg is not installed, please run the MPC Upgrade first." >&2; exit 1; }
 
 
 gitpath=https://github.com/xortuna/RuneYoutubeAddon/raw/master/
@@ -48,23 +49,16 @@ try {
 }    
 catch (Exception $e) {
     echo "Exception :  ", $e->getMessage(),"<br />";
-
 }
 ?>' >> /srv/http/youtube.php
 
 ## Javascript Injection into Footer##
 file=/srv/http/app/templates/footer.php
 echo $file
-echo '<script src="<?=$this->asset('"'"'/js/RuneYoutube.js'"'"')?>"></script>' >> $file
 
-## CSS injection into header ##
-echo -e "$bar Patching files ..."
-file=/srv/http/app/templates/header.php
-echo $file
-sed -i -e $'/<link rel="stylesheet" href="<?=$this->asset(\'/css/runeui.css\')?>">/ a\
-    <!-- RUNE_YOUTUBE_MOD -->\
-    <link rel="stylesheet" href="<?=$this->asset('/css/addon_youtube.css')?>">\
-    <!-- END_RUNE_YOUTUBE_MOD -->' $file
+[[ -e $file.backup ]] && file=$file.backup
+
+appendAsset 'fastclick.min.js' 'RuneYoutube.js'
 
 ### Tube ###
 echo -e "$bar Creasting bash scripts..."
@@ -73,7 +67,6 @@ youtube-dl --no-mtime --embed-thumbnail --restrict-filenames -o \'/mnt/MPD/Local
 ### Tube playlist ###
 echo $'#!/bin/bash
 youtube-dl --no-mtime --embed-thumbnail --restrict-filenames --ignore-errors -o \'/mnt/MPD/LocalStorage/Youtube/%(title)s.%(ext)s\' --write-description -f "bestaudio[ext=m4a]" $1 ; mpc update --wait LocalStorage/Youtube
-
 (IFS=\'
 \'
 for x in $(find /mnt/MPD/LocalStorage/Youtube/ -type f -name *.description -mmin -15); do VV=$(basename "$x" .description) && mpc add "LocalStorage/Youtube/$VV.m4a" && echo $VV && rm $x; done)
@@ -83,34 +76,14 @@ for x in $(find /mnt/MPD/LocalStorage/Youtube/ -type f -name *.description -mmin
 echo -e "$bar Patching files ..."
 file=/srv/http/app/templates/playback.php
 echo $file
-sed -i -e $'/<button id="pl-manage-save" class="btn btn-default" type="button" title="Save current queue as playlist" data-toggle="modal" data-target="#modal-pl-save"><i class="fa fa-save"><\/i><\/button>/ a\
-			<!-- RUNE_YOUTUBE_MOD -->\
-			<button id="pl-import-youtube" class="btn btn-default" type="button" title="Import a playlist or video from youtube." data-toggle="modal" data-target="#modal-pl-youtube"><i class="fa fa-youtube-play"></i></button>\
-<!-- END_RUNE_YOUTUBE_MOD -->' -e $'/<div id="modal-pl-save" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal-pl-save-label" aria-hidden="true">/ i\
-<!-- RUNE_YOUTUBE_MOD -->\
-<div id="modal-pl-youtube" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal-pl-youtube-label" aria-hidden="true">\
-    <div class="modal-dialog">\
-        <div class="modal-content">\
-            <div class="modal-header">\
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
-                <h3 class="modal-title" id="modal-pl-youtube-label">Import from youtube</h3>\
-            </div>\
-            <div class="modal-body">\
-                <label for="pl-video-url">Search a term or paste a url</label>\
-                <input id="pl-video-url" class="form-control osk-trigger" type="text" placeholder="Search...">\
-                <ul id="pl-video-searchresults"></ul>\
-            </div>\
-            <div class="modal-footer">\
-                <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">Finished</button>\
-            </div>\
-        </div>\
-    </div>\
-</div>\
-<!-- END_RUNE_YOUTUBE_MOD -->' $file
 
-# for RuneUI Enhancement
-file=/srv/http/app/templates/playbackcustom.php
-[[ -e $file ]] && sed -i '/id="pl-import-youtube"/ {s/<!--//; s/-->//}' $file
+[[ -e $file.backup ]] && file=$file.backup
+
+string=$( cat <<'EOF'
+			<button id="pl-import-youtube" class="btn btn-default" type="button" title="Import a playlist or video from youtube." data-toggle="modal" data-target="#modal-pl-youtube"><i class="fa fa-youtube-play"></i></button>
+EOF
+)
+appendH 'id="pl-manage-save"'
 
 echo -e "$bar Creating YouTube storage directory ..."
 dir=/mnt/MPD/LocalStorage/Youtube
@@ -126,12 +99,8 @@ chown http:http /usr/local/bin/tube
 chown http:http /usr/local/bin/tubeplaylist
 chown http:http /mnt/MPD/LocalStorage/Youtube
 
-
 echo -e "$bar Getting album art..."
 wgetnc $gitpath/cover.png -P /mnt/MPD/LocalStorage/Youtube
-
-
-
 
 # end custom script --------------------------------------------------------------------------------<<<
 
